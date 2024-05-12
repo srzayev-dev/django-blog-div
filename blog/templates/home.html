@@ -1,33 +1,66 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href=" {% static 'css/bootstrap.min.css' %}" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
+{% extends 'base.html' %}
 
-    <div class="container text-center">
-        <div class="row">
-          <div class="col mt-5">
-            Column
-          </div>
-          <div class="col">
-            Column
-          </div>
-          <div class="col">
-            Column
-          </div>
-        </div>
-      </div>
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+{% for post in posts %}
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="{{ post.image.url }}" class="img-fluid rounded-start " alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title}} </h5>
+        <p class="card-text">{{ post.content | truncatechars:15 }}</p>
+        <p class="card-text">{{ post.author }}</p>  
+        <p class="card-text"><small class="text-body-secondary">{{ post.created_at }} əvvəl</small></p>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="alert alert-info" role="alert">
+  Hələlik heç bir məqalə yoxdur.
+</div>
+{% endfor %}
 
 
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
 
-    <script src=" {% static 'js/bootstrap.bundle.min.js' %} " integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
-  </body>
-</html>
+  <!-- first page -->
+    <li class="page-item">
+      <a class="page-link" href="?page=1">Birinci</a>
+    </li>
+
+    {% if posts.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.previous_page_number }}">Əvvəlki</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Əvvəlki</a>
+      </li>
+    {% endif %}
+    
+    <li class="page-item"><a class="page-link" href="#">{{ posts.number }}</a></li>
+    
+    {% if posts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.next_page_number }}">Sonraki</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Sonraki</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item">
+      <a class="page-link" href="?page={{ posts.paginator.num_pages }}">Sonuncu</a>
+    </li>
+   
+    
+  </ul>
+</nav>
+{% endblock %}
