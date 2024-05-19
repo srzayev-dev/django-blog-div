@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}My posts{% endblock %}
+
+{% block content %}
+
+{% for post in posts %}
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="{{ post.image.url }}" class="img-fluid rounded-start " alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title}} </h5>
+        <p class="card-text">{{ post.content | truncatechars:15 }}</p>
+        <p class="card-text">{{ post.author }}</p>  
+        <p class="card-text"><small class="text-body-secondary">{{ post.created_at }} əvvəl</small></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="alert alert-info" role="alert">
+  Hələlik heç bir məqalə yoxdur.
+</div>
+{% endfor %}
+
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+
+  <!-- first page -->
+    <li class="page-item">
+      <a class="page-link" href="?page=1">Birinci</a>
+    </li>
+
+    {% if posts.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.previous_page_number }}">Əvvəlki</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Əvvəlki</a>
+      </li>
+    {% endif %}
+    
+    <li class="page-item"><a class="page-link" href="#">{{ posts.number }}</a></li>
+    
+    {% if posts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.next_page_number }}">Sonraki</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Sonraki</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item">
+      <a class="page-link" href="?page={{ posts.paginator.num_pages }}">Sonuncu</a>
+    </li>
+   
+    
+  </ul>
+</nav>
+{% endblock %}

@@ -5,5 +5,5 @@ register = template.Library()
 
 @register.simple_tag
 def category_list():
-    categories = Category.objects.all()
+    categories = Category.objects.all().order_by('-id')
     return categories
