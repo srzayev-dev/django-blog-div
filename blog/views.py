@@ -3,15 +3,22 @@ from django.shortcuts import render, get_object_or_404
 from blog.models.post import Post, Category
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 
 def home(request):
     #return HttpResponse('<h1>Hello World</h1>')
     # categories = Category.objects.all()  # Fetch all categories
-    
+
+    sorgu = request.GET.get('sorgu')
     posts = Post.objects.all()
+    
+    if sorgu:
+        posts = Post.objects.filter(Q(title__icontains=sorgu) 
+                                    | Q(content__icontains=sorgu)).order_by('-created_at').distinct()
+        
     page = request.GET.get('page', 1)
-    paginator = Paginator(posts, 2)
+    paginator = Paginator(posts, 10)
 
     context = {
         'posts': paginator.get_page(page),
