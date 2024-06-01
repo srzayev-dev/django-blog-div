@@ -1,5 +1,6 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from blog.forms.post_create import PostCreateForm
 from blog.models.post import Post, Category
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -57,3 +58,29 @@ def myPostsView(request):
 def hello_world_view(request):
     # return render(request, 'hello_world.html')
     return HttpResponse('Hello World')
+
+def post_detail(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    context = {
+        'post': post
+    }
+    return render(request, 'post_detail.html', context=context)
+
+
+@login_required(login_url='/admin/login/')
+def post_create(request):
+    form = PostCreateForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        post = Post()
+        post.title = form.cleaned_data.get('title')
+        post.content = form.cleaned_data.get('content')
+        post.image = form.cleaned_data.get('image')
+        post.author = request.user
+        post.save()
+        post.category.set(form.cleaned_data.get('category'))
+        return redirect('myPosts')
+          
+    context = {
+        'form': form,
+    }
+    return render(request, 'post_create.html', context=context)

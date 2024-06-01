@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from blog.views import home, category, myPostsView, hello_world_view
+from blog.views import home, category, myPostsView, post_detail, post_create
 urlpatterns = [
     path('', home, name='home'),
     path('category/<slug:slug>/', category, name='category'),
     path('myposts/', myPostsView, name='myPosts'),
-    path('hello/', hello_world_view, name='hello'),
+    path('detail/<slug:slug>/', post_detail, name='post_detail'),
+    path('create/', post_create, name='post_create'),
 ]
