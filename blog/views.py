@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from blog.forms.post_create import PostCreateForm
+from blog.forms.post_edit import PostEditForm
 from blog.models.post import Post, Category
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -71,16 +72,31 @@ def post_detail(request, slug):
 def post_create(request):
     form = PostCreateForm(request.POST or None, request.FILES or None)
     if form.is_valid():
-        post = Post()
-        post.title = form.cleaned_data.get('title')
-        post.content = form.cleaned_data.get('content')
-        post.image = form.cleaned_data.get('image')
+        post = form.save(commit=False)
         post.author = request.user
         post.save()
-        post.category.set(form.cleaned_data.get('category'))
+        form.save_m2m()
         return redirect('myPosts')
-          
+    
     context = {
-        'form': form,
+        'form': form
     }
     return render(request, 'post_create.html', context=context)
+
+
+@login_required(login_url='/admin/login/')
+def post_edit(request, slug):
+    post = get_object_or_404(Post, slug=slug, author=request.user)
+    form = PostEditForm(request.POST or None, request.FILES or None, instance=post)
+    if form.is_valid():
+        form.save()
+        return redirect('post_detail', slug=post.slug)
+
+    return render(request, 'post_edit.html', context={'form': form})
+
+
+@login_required(login_url='/admin/login/')
+def post_delete(request, slug):
+    post = get_object_or_404(Post, slug=slug, author=request.user)
+    post.delete()
+    return redirect('myPosts')

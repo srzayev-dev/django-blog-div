@@ -7,7 +7,9 @@
 <div class="card mb-3">
   <div class="row g-0">
     <div class="col-md-4">
+      {% if post.image %}
       <img src="{{ post.image.url }}" class="img-fluid rounded-start " alt="...">
+      {% endif %}
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -15,6 +17,8 @@
         <p class="card-text">{{ post.content }}</p>
         <p class="card-text">{{ post.author }}</p>   
         <p class="card-text"><small class="text-body-secondary">{{ post.created_at }}</small></p>
+        <a href="{% url 'post_edit' slug=post.slug %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'post_delete' slug=post.slug %}" class="btn btn-primary">Delete</a>
       </div>
     </div>
   </div>
