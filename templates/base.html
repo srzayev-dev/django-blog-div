@@ -68,7 +68,11 @@
                 </div>
                 <ul class="list-group list-group-flush">
                   <li class="list-group-item">Profil düzənlə</li>
-                  <li class="list-group-item">Şifrəmi dəyişdir</li>
+                  <li class="list-group-item">
+                    <a href="{% url 'password_change' %}">
+                    Şifrəni dəyiş
+                    </a>
+                  </li>
                   <li class="list-group-item">
                     <a href="{% url 'post_create' %}">
                     Post paylaş
@@ -79,7 +83,12 @@
                     Mənim paylaşımlarım
                     </a>
                   </li>
-                  <li class="list-group-item">Çıxış</li>
+                  <li class="list-group-item">
+                    <li class="list-group-item">
+                      <a href="{% url 'logout' %}">
+                      Çıxış
+                      </a>
+                    </li>
                 </ul>
               </div>
             </div>
