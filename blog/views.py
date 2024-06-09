@@ -6,27 +6,39 @@ from blog.models.post import Post, Category
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+# def home(request):
+#     #return HttpResponse('<h1>Hello World</h1>')
+#     # categories = Category.objects.all()  # Fetch all categories
+#     sorgu = request.GET.get('sorgu')
+#     posts = Post.objects.all()
+#     if sorgu:
+#         posts = Post.objects.filter(Q(title__icontains=sorgu) 
+#                                     | Q(content__icontains=sorgu)).order_by('-created_at').distinct()
+#     page = request.GET.get('page', 1)
+#     paginator = Paginator(posts, 10)
 
-def home(request):
-    #return HttpResponse('<h1>Hello World</h1>')
-    # categories = Category.objects.all()  # Fetch all categories
+#     context = {
+#         'posts': paginator.get_page(page),
+#         # 'categories': categories
+#     }
+#     return render(request, 'home.html', context=context)
 
-    sorgu = request.GET.get('sorgu')
-    posts = Post.objects.all()
-    
-    if sorgu:
-        posts = Post.objects.filter(Q(title__icontains=sorgu) 
-                                    | Q(content__icontains=sorgu)).order_by('-created_at').distinct()
-        
-    page = request.GET.get('page', 1)
-    paginator = Paginator(posts, 10)
+class HomeView(ListView):
+    model = Post
+    template_name = 'home.html'
+    context_object_name = 'posts'
+    paginate_by = 10
 
-    context = {
-        'posts': paginator.get_page(page),
-        # 'categories': categories
-    }
-    return render(request, 'home.html', context=context)
+    def get_queryset(self):
+        sorgu = self.request.GET.get('sorgu')
+        posts = Post.objects.all()
+        if sorgu:
+            posts = Post.objects.filter(Q(title__icontains=sorgu) 
+                                        | Q(content__icontains=sorgu)).order_by('-created_at').distinct()
+        return posts
 
 def category(request, slug):
     # posts = Post.objects.filter(category__slug=slug)
@@ -42,18 +54,28 @@ def category(request, slug):
     return render(request, 'home.html', context=context)
 
 
-@login_required(login_url='/admin/login/')
-def myPostsView(request):
-    # posts = Post.objects.filter(author=request.user).order_by('-created_at')
-    posts = request.user.postsByAuthor.all().order_by('-created_at')
+# @login_required(login_url='/admin/login/')
+# def myPostsView(request):
+#     # posts = Post.objects.filter(author=request.user).order_by('-created_at')
+#     posts = request.user.postsByAuthor.all().order_by('-created_at')
 
-    page = request.GET.get('page', 1)
-    paginator = Paginator(posts, 2)
+#     page = request.GET.get('page', 1)
+#     paginator = Paginator(posts, 2)
 
-    context =  {
-        'posts': paginator.get_page(page)
-    }
-    return render(request, 'myPosts.html', context=context)
+#     context =  {
+#         'posts': paginator.get_page(page)
+#     }
+#     return render(request, 'myPosts.html', context=context)
+
+
+class MyPostsView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'myPosts.html'
+    context_object_name = 'posts'
+    paginate_by = 5
+    
+    def get_queryset(self):
+        return self.request.user.postsByAuthor.all().order_by('-created_at')
 
 
 def hello_world_view(request):
